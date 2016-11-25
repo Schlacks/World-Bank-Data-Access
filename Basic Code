@@ -67,7 +67,7 @@ text1 = ScrolledText(page1, width=110, height=7)
 btn2 = tk.Button(page1, text="Search", command=search1)
 btn3 = tk.Button(page1, text="Display", command=graphing)
 
-label_3 = Label(page1, text='Copy/Paste your chosen Indicator in the field below and proceed to the countries of interest')
+label_3 = Label(page1, text='Copy/Paste your chosen Indicator in the field to the rigth and proceed to the countries of interest')
 label_4 = Label(page1,text='')
 label_5 = Label(page1, text='Please enter the country/countries of interest in to the right text field with a semicolon between them (e.g. "Germany;Uganda" Check the tab "Country List" for a list of available countries and entities). Then push "Display".')
 
