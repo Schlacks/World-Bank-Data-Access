@@ -1,0 +1,99 @@
+import pandas as pd
+from tkinter import *
+import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
+import numpy as np
+import matplotlib as plt
+from tkinter import ttk
+plt.use('TkAgg')
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backend_bases import key_press_handler
+
+
+from matplotlib.figure import Figure
+root = Tk()
+
+path = 'c:/Users/Jan/PycharmProjects/Newversion/ML playing/data_worldbank.csv'
+df = pd.read_csv(path)
+df.rename(columns={df.columns[0]: "Country Name"}, inplace=True)
+Countries=np.unique(df['Country Name'])
+
+def graphing():
+    countries_of_interest=ent2.get().split(';')
+    Indicator=ent1.get()
+    VOI=df[df['Indicator Name']==Indicator]
+    VOI1=VOI.set_index(keys='Country Name')
+    a=[]
+    for i in countries_of_interest:
+        a.append(VOI1.index.get_loc(i))
+
+    fig = Figure(figsize=(10,10), dpi=100)
+    ax = fig.add_subplot(111)
+    VOI1.iloc[a].ix[:,3:].transpose().fillna(method='pad').plot(figsize=(9,6),title=Indicator,ax=ax)
+    canvas = FigureCanvasTkAgg(fig, master=page1)
+    canvas.show()
+    canvas.get_tk_widget().grid(row=10,column=0)
+    canvas.get_tk_widget().delete("all")
+
+def search1():
+    text1.delete(1.0, END)
+    x = np.unique(df['Indicator Name'])
+    y = ent.get()
+    z = str()
+    a = 0
+    for i in range(len(x)):
+        if y.lower() in x[i].lower():
+            z = z + "\n" + x[i]
+            a = a + 1
+
+    if len(z) == 0:
+        z = 'Nothing found. Please try a different word.'
+    text1.insert(END, z)
+    label_2 = Label(page1, text='{} Hits'.format(a))
+    label_2.grid(row=3, column=0, sticky=W)
+
+nb = ttk.Notebook(root)
+page1 = ttk.Frame(nb)
+page2=ttk.Frame(nb)
+
+root.geometry("1400x900")
+
+label_1 = Label(page1, text='Type in concept of interest to find an associated Indicator:')
+label_1.grid(row=0)
+var = tk.StringVar()
+ent = tk.Entry(page1, textvariable=var)
+
+text1 = ScrolledText(page1, width=110, height=7)
+btn2 = tk.Button(page1, text="Search", command=search1)
+btn3 = tk.Button(page1, text="Display", command=graphing)
+
+label_3 = Label(page1, text='Copy/Paste your chosen Indicator in the field below and proceed to the countries of interest')
+label_4 = Label(page1,text='')
+label_5 = Label(page1, text='Please enter the country/countries of interest in to the right text field with a semicolon between them (e.g. "Germany;Uganda" Check the tab "Country List" for a list of available countries and entities). Then push "Display".')
+
+var1 = tk.StringVar()
+ent1 = tk.Entry(page1, textvariable=var1)
+
+var2 = tk.StringVar()
+ent2 = tk.Entry(page1, textvariable=var2)
+
+text2 = ScrolledText(page2, width=110, height=30)
+text2.insert(END, Countries)
+
+
+ent.grid(row=0, column=1)
+ent1.grid(row=5, column=1)
+ent2.grid(row=8, column=1)
+btn2.grid(row=1, columns=2)
+btn3.grid(row=9, columns=2)
+text1.grid(row=4, column=0)
+text2.grid(row=0, column=0)
+label_3.grid(row=5,column=0)
+label_4.grid(row=7,column=0)
+label_5.grid(row=8,column=0)
+
+nb.add(page1, text='Main')
+nb.add(page2, text='Country List')
+nb.grid(row=1,column=0,sticky=W)
+
+root.mainloop()
